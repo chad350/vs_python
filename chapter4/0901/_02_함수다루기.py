@@ -1,3 +1,6 @@
+# 중첩 / 매개변수 / 인자
+
+
 # 중첩해서 함수 생성 가능
 def function_1() : 
     def function_2() : 
@@ -46,11 +49,3 @@ def total(*numbers) :
     print("total :",sum(numbers))
     
 total(1,2,3,4,5)
-
-
-
-
-
-
-def tmp(name : str = "안녕") :
-    pass
