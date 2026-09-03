@@ -17,11 +17,16 @@ print(hero.get("gold", 0))
 hero.setdefault("name", "미로")
 hero.setdefault("hp", 100)
 
+# 삭제
+del hero["name"]
+
 
 # 딕셔너리 합치기
 # 중복되는 키값이 덮어쓰기가된다 (원본이 사라짐)
 stat = { "level" : 20, "mp" : 30, "atk" : 15, "def" : 5}
 hero.update(stat)
+
+
 
 print(hero)
 
