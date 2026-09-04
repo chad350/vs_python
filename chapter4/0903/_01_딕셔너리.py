@@ -4,7 +4,6 @@ exp = 56.4        # 소수점     float
 name = "Chad"     # 문자      str
 has_item = False  # 참 / 거짓  bool
 
-
 # 여러개의 데이터
 # 순서에 따라 접근 시퀀스
 
