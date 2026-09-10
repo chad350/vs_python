@@ -86,20 +86,18 @@ print(f"프로덕트 갯수 : {len(products_2)}")
 print(f"뱃지 갯수 : {len(badge_2)}")
 
 
+# 클래스가 중복되는 경우에 검색
 sales = driver.find_elements(By.CSS_SELECTOR, ".item.sale")
 print(f"세일중인 아이템 갯수 : {len(sales)}")
 for item in sales:
     print(item.text)
 
 
-
-
-
-
-
-
 # xpath
-
+reset_btn = driver.find_element(By.XPATH, "//button[@data-testid='search-reset']")
+ready_order = driver.find_element(By.XPATH, "//tr[@data-status='ready']")
+print(reset_btn.text)
+print(ready_order.text)
 
 
 
