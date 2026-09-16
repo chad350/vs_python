@@ -1,5 +1,6 @@
 import time
 import logging
+import json
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -116,12 +117,38 @@ print(dist / 86400)  # 일자 단위로 체크
 # 6.999993532860168 -> 7 
 
 
+path = "chapter6/_0916/saved"
+
+Path(path).mkdir(parents=True, exist_ok=True)
 
 # driver.get_cookies() - 지금 쿠키 목록 전체를 가지고 올 수 있음
 # driver.get_cookie("쿠키의 키값") - 지금 쿠키 목록중에 원하는 쿠키를 가지고 올 수 있음
 
 token_cookie = driver.get_cookie("adv01_op_token")
 print("login 을 위한 토큰 :", token_cookie)
+
+
+
+
+
+# 키값 / 밸류 -> 텍스트
+# json 
+
+
+f = open(f"{path}/cookie.json", "w", encoding="utf-8")
+
+# dump - 우리가 가진 데이터 -> json
+# load - json 데이터 -> 파이썬으로 가지고 오는 기능
+
+#   json 으로 저장하고 싶은 데이터         추가 옵션 1        추가 옵션 2
+json.dump(driver.get_cookies(),   f    ,   ensure_ascii=False,  indent=4)
+#                 어떤 파일에 저장할지
+
+f.close()
+
+
+
+
 
 
 el_btn_logout = driver.find_element(By.ID, "logout-btn")
@@ -131,14 +158,6 @@ print("로그아웃!")
 
 token_cookie = driver.get_cookie("adv01_op_token")
 print("login 을 위한 토큰 :", token_cookie)
-
-
-
-
-
-
-
-
 
 
 
