@@ -53,23 +53,29 @@ driver.execute_script("arguments[0].scrollIntoView({block:'center'})", el_footer
 driver.save_screenshot(f"{path}/full_screenshot_foot.png")
 
 
-
 # 2. 로그
+# format
+# 시간 - %(asctime)s
+# 로그 레벨 -%(levelname)s
+# 파일네임 - %(filename)s
+# 코드 라인 - %(lineno)d
+# 메시지 -%(message)s
+
+# log level
+# 1 - debug
+# 2 - info
+# 3 - warning
+# 4 - error
+# 5 - critical
+
 log_name = f"{path}/log_data.log"
-logging.basicConfig(filename=log_name, level=logging.INFO, encoding="utf-8")
+logging.basicConfig(filename=log_name, level=logging.INFO, encoding="utf-8",
+                    format="[%(levelname)s] %(asctime)s  :  %(message)s    - (%(filename)s .line%(lineno)d)")
 
-
-logging.info("로그정보를 남깁니다.1")
-logging.info("로그정보를 남깁니다.2")
-logging.info("로그정보를 남깁니다.3")
-logging.info("로그정보를 남깁니다.4")
-
-
+logging.debug("디버그 정보입니다.")
+logging.info("로그정보를 남깁니다")
 logging.warning("주의가 필요합니다.")
 logging.error("에러가 발생했습니다.")
-
-
-
-
+logging.critical("치명적인 에러입니다.")
 
 input()
