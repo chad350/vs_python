@@ -11,7 +11,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome()
 
-
 # 우리가 일반 크롬이나 실제로 쓰는 브라우저에서 사용할때
 # 기존에 사용하던 로그인 정보나, 여러 사용데이터들이 이미 쿠키로 등록
 
@@ -43,6 +42,9 @@ el_btn_apply.click()
 
 cookies = driver.get_cookies()
 print(cookies) # [{'domain': '302lab.co.kr', 'expiry': 1792134895, 'httpOnly': False, 'name': 'adv01_op_theme', 'path': '/', 'sameSite': 'Lax', 'secure': False, 'value': 'light'}]
+
+
+['302lab.co.kr', 1792134895, False, 'adv01_op_theme', 'light']
 
 for c in cookies:
     print(c["domain"])

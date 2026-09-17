@@ -15,10 +15,10 @@ driver.get("https://302lab.co.kr/websample/selenium-advanced-demo/a01_admin_logi
 
 print(driver.get_cookies())
 
-token_dict = { "name": "token", "value" : "asdkjasldkja"}
+token_dict = {'domain': '302lab.co.kr', 'expiry': 1790212761, 'httpOnly': False, 'name': 'adv01_op_token', 'path': '/', 'sameSite': 'Lax', 'secure': False, 'value': 'OPTK-7A1C'}
 
 driver.add_cookie(token_dict)
-
+driver.refresh()
 
 print(driver.get_cookies())
 

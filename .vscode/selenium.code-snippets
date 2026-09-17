@@ -1,0 +1,413 @@
+{
+  "셀레니움 시작 (import + 드라이버)": {
+    "prefix": "selstart",
+    "body": [
+      "import time",
+      "from selenium import webdriver",
+      "from selenium.webdriver.common.by import By",
+      "from selenium.webdriver.common.keys import Keys",
+      "from selenium.webdriver.support.ui import WebDriverWait",
+      "from selenium.webdriver.support import expected_conditions as EC",
+      "",
+      "driver = webdriver.Chrome()",
+      "driver.get(\"${1:https://302lab.co.kr/websample/selenium-demo/}\")",
+      "wait = WebDriverWait(driver, ${2:10})",
+      "",
+      "$0"
+    ],
+    "description": "수업 코드의 import 6줄 + driver + wait 생성",
+    "scope": "python"
+  },
+  "셀레니움 종료": {
+    "prefix": "selend",
+    "body": [
+      "input(\"확인 후 Enter 를 누르면 종료합니다\")",
+      "driver.quit()"
+    ],
+    "description": "창을 바로 닫지 않고 확인 후 종료",
+    "scope": "python"
+  },
+  "요소 1개 찾기": {
+    "prefix": "selel",
+    "body": [
+      "el_${1:name} = driver.find_element(By.${2|ID,CSS_SELECTOR,XPATH,NAME,CLASS_NAME,TAG_NAME,LINK_TEXT,PARTIAL_LINK_TEXT|}, \"${3:$CLIPBOARD}\")$0"
+    ],
+    "description": "el_ 접두사로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - ID": {
+    "prefix": "selelid",
+    "body": [
+      "el_${1:name} = driver.find_element(By.ID, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.ID 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - CSS_SELECTOR": {
+    "prefix": "selelcss",
+    "body": [
+      "el_${1:name} = driver.find_element(By.CSS_SELECTOR, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.CSS_SELECTOR 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - XPATH": {
+    "prefix": "selelxpath",
+    "body": [
+      "el_${1:name} = driver.find_element(By.XPATH, '${2:$CLIPBOARD}')$0"
+    ],
+    "description": "By.XPATH 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - NAME": {
+    "prefix": "selelname",
+    "body": [
+      "el_${1:name} = driver.find_element(By.NAME, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.NAME 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - CLASS_NAME": {
+    "prefix": "selelclass",
+    "body": [
+      "el_${1:name} = driver.find_element(By.CLASS_NAME, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.CLASS_NAME 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - TAG_NAME": {
+    "prefix": "seleltag",
+    "body": [
+      "el_${1:name} = driver.find_element(By.TAG_NAME, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.TAG_NAME 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - LINK_TEXT": {
+    "prefix": "selellink",
+    "body": [
+      "el_${1:name} = driver.find_element(By.LINK_TEXT, \"${2:$CLIPBOARD}\")$0"
+    ],
+    "description": "By.LINK_TEXT 로 요소 1개를 찾습니다",
+    "scope": "python"
+  },
+  "요소 1개 찾기 - 클립보드 로케이터": {
+    "prefix": "selelc",
+    "body": [
+      "el_${1:${CLIPBOARD/(^[^a-zA-Z0-9]+)|([^a-zA-Z0-9]+$)|([^a-zA-Z0-9]+)/${3:+_}/g}} = driver.find_element(By.${CLIPBOARD/^(\\/|\\()?[\\s\\S]*$/${1:?XPATH:CSS_SELECTOR}/}, '$CLIPBOARD')$0"
+    ],
+    "description": "클립보드의 선택자를 붙이고 By 종류와 변수 이름을 자동으로 정합니다",
+    "scope": "python"
+  },
+  "요소 여러 개 찾기 - 클립보드 로케이터": {
+    "prefix": "selelsc",
+    "body": [
+      "els_${1:${CLIPBOARD/(^[^a-zA-Z0-9]+)|([^a-zA-Z0-9]+$)|([^a-zA-Z0-9]+)/${3:+_}/g}} = driver.find_elements(By.${CLIPBOARD/^(\\/|\\()?[\\s\\S]*$/${1:?XPATH:CSS_SELECTOR}/}, '$CLIPBOARD')",
+      "print(\"개수 :\", len(els_$1))",
+      "for el in els_$1:",
+      "    ${0:print(el.text)}"
+    ],
+    "description": "클립보드의 선택자로 find_elements + 반복문",
+    "scope": "python"
+  },
+  "명시적 대기 - 클립보드 로케이터": {
+    "prefix": "selwaitc",
+    "body": [
+      "el_${1:${CLIPBOARD/(^[^a-zA-Z0-9]+)|([^a-zA-Z0-9]+$)|([^a-zA-Z0-9]+)/${3:+_}/g}} = wait.until(",
+      "    EC.${2|presence_of_element_located,visibility_of_element_located,element_to_be_clickable|}((By.${CLIPBOARD/^(\\/|\\()?[\\s\\S]*$/${1:?XPATH:CSS_SELECTOR}/}, '$CLIPBOARD')),",
+      "    \"${3:대기 실패 메시지}\"",
+      ")$0"
+    ],
+    "description": "클립보드의 선택자로 wait.until",
+    "scope": "python"
+  },
+  "요소 여러 개 찾기 + 반복": {
+    "prefix": "selels",
+    "body": [
+      "els_${1:name} = driver.find_elements(By.${2|CSS_SELECTOR,XPATH,CLASS_NAME,TAG_NAME|}, \"${3:$CLIPBOARD}\")",
+      "print(\"개수 :\", len(els_$1))",
+      "for el in els_$1:",
+      "    ${0:print(el.text)}"
+    ],
+    "description": "find_elements 뒤 개수 확인과 반복문까지",
+    "scope": "python"
+  },
+  "값 읽기 (text / attribute)": {
+    "prefix": "selval",
+    "body": [
+      "val_${1:name} = el_${2:name}.text",
+      "val_${1:name}_attr = el_$2.get_attribute(\"${3:value}\")",
+      "print(\"text :\", val_$1)",
+      "print(\"attribute :\", val_$1_attr)$0"
+    ],
+    "description": "text 와 get_attribute 두 방식을 나란히 확인",
+    "scope": "python"
+  },
+  "명시적 대기 (wait.until)": {
+    "prefix": "selwait",
+    "body": [
+      "el_${1:name} = wait.until(",
+      "    EC.${2|presence_of_element_located,visibility_of_element_located,element_to_be_clickable,invisibility_of_element_located,text_to_be_present_in_element|}((By.${3|ID,CSS_SELECTOR,XPATH,CLASS_NAME|}, \"${4:$CLIPBOARD}\")),",
+      "    \"${5:대기 실패 메시지}\"",
+      ")$0"
+    ],
+    "description": "메시지는 until 의 두 번째 인자에 넣습니다",
+    "scope": "python"
+  },
+  "대기 - presence_of_element_located": {
+    "prefix": "selwaitpres",
+    "body": [
+      "el_${1:name} = wait.until(",
+      "    EC.presence_of_element_located((By.${2|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${3:$CLIPBOARD}\")),",
+      "    \"${4:대기 실패 메시지}\"",
+      ")$0"
+    ],
+    "description": "DOM 에 존재할 때까지 (보이지 않아도 통과)",
+    "scope": "python"
+  },
+  "대기 - visibility_of_element_located": {
+    "prefix": "selwaitvis",
+    "body": [
+      "el_${1:name} = wait.until(",
+      "    EC.visibility_of_element_located((By.${2|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${3:$CLIPBOARD}\")),",
+      "    \"${4:대기 실패 메시지}\"",
+      ")$0"
+    ],
+    "description": "화면에 보일 때까지",
+    "scope": "python"
+  },
+  "대기 - element_to_be_clickable": {
+    "prefix": "selwaitclick",
+    "body": [
+      "el_${1:name} = wait.until(",
+      "    EC.element_to_be_clickable((By.${2|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${3:$CLIPBOARD}\")),",
+      "    \"${4:대기 실패 메시지}\"",
+      ")$0"
+    ],
+    "description": "클릭할 수 있을 때까지",
+    "scope": "python"
+  },
+  "대기 - invisibility_of_element_located": {
+    "prefix": "selwaitinvis",
+    "body": [
+      "wait.until(",
+      "    EC.invisibility_of_element_located((By.${1|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${2:$CLIPBOARD}\")),",
+      "    \"${3:로딩 표시가 사라지지 않았습니다}\"",
+      ")$0"
+    ],
+    "description": "요소가 사라지거나 숨겨질 때까지 (로딩 스피너)",
+    "scope": "python"
+  },
+  "대기 - presence_of_all_elements_located": {
+    "prefix": "selwaitall",
+    "body": [
+      "els_${1:name} = wait.until(",
+      "    EC.presence_of_all_elements_located((By.${2|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${3:$CLIPBOARD}\")),",
+      "    \"${4:목록이 나오지 않았습니다}\"",
+      ")",
+      "print(\"개수 :\", len(els_$1))$0"
+    ],
+    "description": "요소가 1개 이상 나올 때까지, 결과는 list",
+    "scope": "python"
+  },
+  "대기 - text_to_be_present_in_element": {
+    "prefix": "selwaittext",
+    "body": [
+      "wait.until(",
+      "    EC.text_to_be_present_in_element((By.${1|ID,CSS_SELECTOR,XPATH,CLASS_NAME,NAME|}, \"${2:$CLIPBOARD}\"), \"${3:기대 문구}\"),",
+      "    \"${4:문구가 바뀌지 않았습니다}\"",
+      ")$0"
+    ],
+    "description": "요소의 글자에 기대 문구가 포함될 때까지",
+    "scope": "python"
+  },
+  "대기 - staleness_of": {
+    "prefix": "selwaitstale",
+    "body": [
+      "el_old = el_${1:name}    # 갱신 전 요소를 먼저 보관합니다",
+      "${2:el_btn.click()}",
+      "wait.until(EC.staleness_of(el_old), \"요소가 갱신되지 않았습니다\")",
+      "el_$1 = driver.find_element(By.${3|ID,CSS_SELECTOR,XPATH|}, \"${4:$CLIPBOARD}\")    # 다시 찾습니다$0"
+    ],
+    "description": "화면이 갱신되어 옛 요소가 만료될 때까지, 그 뒤 다시 찾기",
+    "scope": "python"
+  },
+  "대기 - url_contains": {
+    "prefix": "selwaiturl",
+    "body": [
+      "wait.until(EC.url_contains(\"${1:/list}\"), \"주소가 바뀌지 않았습니다\")",
+      "print(\"현재 주소 :\", driver.current_url)$0"
+    ],
+    "description": "주소에 문자열이 포함될 때까지 (페이지 이동 확인)",
+    "scope": "python"
+  },
+  "대기 - title_is": {
+    "prefix": "selwaittitle",
+    "body": [
+      "wait.until(EC.title_${1|is,contains|}(\"${2:제목}\"), \"제목이 바뀌지 않았습니다\")",
+      "print(\"현재 제목 :\", driver.title)$0"
+    ],
+    "description": "제목이 같아질 때까지 / 포함될 때까지",
+    "scope": "python"
+  },
+  "대기 - alert_is_present": {
+    "prefix": "selwaitalert",
+    "body": [
+      "alert = wait.until(EC.alert_is_present(), \"알림창이 뜨지 않았습니다\")$0"
+    ],
+    "description": "알림창이 뜰 때까지, 결과는 alert 객체",
+    "scope": "python"
+  },
+  "대기 - number_of_windows_to_be": {
+    "prefix": "selwaitwin",
+    "body": [
+      "wait.until(EC.number_of_windows_to_be(${1:2}), \"새 창이 열리지 않았습니다\")$0"
+    ],
+    "description": "창 개수가 n 이 될 때까지",
+    "scope": "python"
+  },
+  "드롭다운 (Select)": {
+    "prefix": "seldrop",
+    "body": [
+      "from selenium.webdriver.support.ui import Select",
+      "",
+      "el_${1:name} = driver.find_element(By.${2|ID,CSS_SELECTOR,NAME|}, \"${3:$CLIPBOARD}\")",
+      "dropdown_$1 = Select(el_$1)",
+      "dropdown_$1.select_by_${4|visible_text,value,index|}(${5:\"항목\"})",
+      "print(\"선택된 항목 :\", dropdown_$1.first_selected_option.text)$0"
+    ],
+    "description": "Select 생성과 선택, 선택 결과 확인",
+    "scope": "python"
+  },
+  "알림창 처리": {
+    "prefix": "selalert",
+    "body": [
+      "alert = wait.until(EC.alert_is_present(), \"알림창이 뜨지 않았습니다\")",
+      "alert_msg = alert.text    # 닫기 전에 변수에 담습니다",
+      "alert.${1|accept,dismiss|}()",
+      "print(\"알림창 메시지 :\", alert_msg)$0"
+    ],
+    "description": "메시지를 먼저 담고 닫는 순서를 고정",
+    "scope": "python"
+  },
+  "prompt 입력 후 확인": {
+    "prefix": "selprompt",
+    "body": [
+      "alert = wait.until(EC.alert_is_present())",
+      "alert.send_keys(\"${1:입력값}\")",
+      "alert.accept()$0"
+    ],
+    "description": "prompt 알림창에 값을 넣고 확인",
+    "scope": "python"
+  },
+  "창 전환 골격": {
+    "prefix": "selwin",
+    "body": [
+      "root_handle = driver.current_window_handle",
+      "wait.until(EC.number_of_windows_to_be(${1:2}), \"새 창이 열리지 않았습니다\")",
+      "for handle in driver.window_handles:",
+      "    if handle != root_handle:",
+      "        driver.switch_to.window(handle)",
+      "        break",
+      "print(\"현재 창 :\", driver.title)",
+      "$0",
+      "driver.close()",
+      "driver.switch_to.window(root_handle)"
+    ],
+    "description": "root_handle 보관 → 새 창 대기 → 전환 → 작업 → 복귀",
+    "scope": "python"
+  },
+  "iframe 진입과 복귀": {
+    "prefix": "selframe",
+    "body": [
+      "el_${1:frame} = driver.find_element(By.${2|ID,CSS_SELECTOR,TAG_NAME|}, \"${3:$CLIPBOARD}\")",
+      "driver.switch_to.frame(el_$1)",
+      "$0",
+      "driver.switch_to.default_content()"
+    ],
+    "description": "frame 진입과 default_content 복귀를 한 쌍으로",
+    "scope": "python"
+  },
+  "자바스크립트 실행": {
+    "prefix": "seljs",
+    "body": [
+      "result = driver.execute_script(\"return ${1:document.title}\")",
+      "print(\"js 결과 :\", result)$0"
+    ],
+    "description": "return 이 있어야 값을 반환합니다",
+    "scope": "python"
+  },
+  "요소까지 스크롤": {
+    "prefix": "selscroll",
+    "body": [
+      "driver.execute_script(\"arguments[0].scrollIntoView({block:'center'})\", el_${1:name})",
+      "time.sleep(1)$0"
+    ],
+    "description": "arguments[0] 으로 요소를 전달해 스크롤",
+    "scope": "python"
+  },
+  "스크린샷 (폴더 생성 포함)": {
+    "prefix": "selshot",
+    "body": [
+      "from pathlib import Path",
+      "from datetime import datetime",
+      "",
+      "path = \"${1:save_data}/\" + datetime.now().strftime(\"%y%m%d\")",
+      "Path(path).mkdir(parents=True, exist_ok=True)",
+      "driver.save_screenshot(f\"{path}/${2:이름}_{datetime.now():%H%M%S}.png\")$0"
+    ],
+    "description": "날짜 폴더를 만들고 시간이 붙은 이름으로 저장",
+    "scope": "python"
+  },
+  "쿠키 읽기와 추가": {
+    "prefix": "selcookie",
+    "body": [
+      "cookies = driver.get_cookies()    # 없다면 빈 list",
+      "print(\"쿠키 개수 :\", len(cookies))",
+      "${1:target}_cookie = driver.get_cookie(\"${2:쿠키이름}\")",
+      "print(\"$2 :\", $1_cookie)",
+      "# driver.add_cookie({\"name\": \"$2\", \"value\": \"${3:값}\"})",
+      "# driver.refresh()$0"
+    ],
+    "description": "get_cookies / get_cookie / add_cookie 묶음",
+    "scope": "python"
+  },
+  "assert 검증 (메시지 포함)": {
+    "prefix": "selassert",
+    "body": [
+      "expected_${1:name} = ${2:\"기대값\"}",
+      "assert val_$1 == expected_$1, f\"기대: {expected_$1}, 실제: {val_$1}\"$0"
+    ],
+    "description": "실패 메시지에 기대값과 실제값을 함께 출력",
+    "scope": "python"
+  },
+  "unittest 골격": {
+    "prefix": "seltest",
+    "body": [
+      "import unittest",
+      "from selenium import webdriver",
+      "from selenium.webdriver.common.by import By",
+      "from selenium.webdriver.support.ui import WebDriverWait",
+      "from selenium.webdriver.support import expected_conditions as EC",
+      "",
+      "",
+      "class ${1:TestSample}(unittest.TestCase):",
+      "    def setUp(self):",
+      "        self.driver = webdriver.Chrome()",
+      "        self.wait = WebDriverWait(self.driver, 10)",
+      "        self.driver.get(\"${2:https://302lab.co.kr/websample/selenium-demo/}\")",
+      "",
+      "    def test_${3:기능}(self):",
+      "        ${0:pass}",
+      "",
+      "    def tearDown(self):",
+      "        self.driver.quit()",
+      "",
+      "",
+      "if __name__ == \"__main__\":",
+      "    unittest.main()"
+    ],
+    "description": "setUp / test_ / tearDown 골격",
+    "scope": "python"
+  }
+}
