@@ -71,5 +71,48 @@ mails_expire = sorted(mails, key= lambda m : m["만료"]  )
 print(mails_expire)
 
 
-max(mails, key= lambda m : m["gold"])
-min(mails, key= lambda m : m["gold"])
+# max(mails, key= lambda m : m["gold"])
+# min(mails, key= lambda m : m["gold"])
+
+
+
+# Q1. tax_price 와 동일한 기능을 가진 lambda 함수 - tax 를 만들어 보세요.
+def tax_price(price):
+    return int(price * 1.1)
+print(tax_price(1000), tax_price(355))
+
+tax = lambda price : int(price * 1.1)
+print(tax(1000), tax(355))
+
+
+# Q2. 아이템 목록 items 를 가격이 싼 순으로 정렬한 배열을 만들고 출력합니다.
+items = [
+    {"이름": "강화석", "가격": 1500},
+    {"이름": "탈것 상자", "가격": 9900},
+    {"이름": "회복 물약", "가격": 300},
+]
+
+sorted_items = sorted(items, key= lambda i : i["가격"])
+print(sorted_items)
+
+# Q3. 레벨이 가장 높은 플레이어와 레벨이 가장 낮은 플레이어의 닉네임 출력
+players = [
+    {"닉네임": "달빛기사", "레벨": 52},
+    {"닉네임": "별빛궁수", "레벨": 48},
+    {"닉네임": "서리방패", "레벨": 61},
+]
+
+max_level_player = max(players, key= lambda p : p["레벨"])
+min_level_player = min(players, key= lambda p : p["레벨"])
+
+print(f"레벨이 가장 높은 플레이어 : {max_level_player["닉네임"]}")
+print(f"레벨이 가장 낮은 플레이어 : {min_level_player["닉네임"]}")
+
+
+sorted_player = sorted(players, key= lambda i : i["레벨"])
+print(f"레벨이 가장 높은 플레이어 : {sorted_player[-1]["닉네임"]}")
+print(f"레벨이 가장 낮은 플레이어 : {sorted_player[0]["닉네임"]}")
+
+# 예시
+# 레벨이 가장 높은 플레이어 : 서리방패
+# 레벨이 가장 낮은 플레이어 : 별빛궁수
