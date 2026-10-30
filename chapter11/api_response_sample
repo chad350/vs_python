@@ -1,0 +1,124 @@
+import requests
+
+BASE_URL = "https://guild-expedition.fly.dev"
+
+# - 로그인
+print("\n1. 로그인하고 길드 정보를 초기화합니다")
+
+response = requests.post(f"{BASE_URL}/auth/token", json = {  "username" : "elice_guild"  , "password" : "elice_1234" })
+token = response.json()["access_token"]
+print("로그인 결과 (auth/token) : ", response.status_code)
+
+headers = {"Authorization" : "Bearer " + token}
+
+# - 초기화
+response = requests.post(f"{BASE_URL}/guild/reset", headers=headers)
+print("초기화 결과 (guild/reset) : ", response.status_code)
+
+
+
+
+print("\n2. 고용하기 전 골드를 조회해 변수에 보관합니다")
+
+response = requests.get(f"{BASE_URL}/guild", headers=headers)
+start_gold = response.json()["gold"]
+
+print("길드정보 조회 결과 (guild) : ", response.status_code)
+print("시작 골드 :", start_gold)
+
+
+
+
+print("\n3. 세라(후보 5번)를 고용합니다")
+
+response = requests.post(f"{BASE_URL}/guild/heroes", headers=headers, json={  "candidate_id" : 5  })
+remain_gold = response.json()["remaining_gold"]
+hero_id = response.json()["hero"]["hero_id"]
+
+print("세라(후보 5번)를 고용 (guild/heroes) : ", response.status_code)  # 201
+print("hero id :", hero_id)     # 1
+print("남은 골드 :", remain_gold)      # 2000
+print(response.json())
+
+price = start_gold - remain_gold
+
+
+print("\n4. 고용한 뒤 골드를 다시 조회해 고용 전과 비교합니다")
+
+response = requests.get(f"{BASE_URL}/guild", headers=headers)
+after_gold = response.json()["gold"]
+
+print("길드정보 조회 결과 (guild) : ", response.status_code)
+print(f"길드의 골드 : {after_gold}    ({start_gold} - {price})")
+
+
+
+
+print("\n상점에서 불꽃 지팡이(103) 1개를 사고 창고를 조회합니다")
+response = requests.post(f"{BASE_URL}/guild/orders", headers=headers, json={ "item_id": 103, "quantity": 1 })
+print("구매 결과 (guild/orders) : ", response.status_code)
+print("남은 골드 :", response.json()["remaining_gold"])
+
+
+response = requests.get(f"{BASE_URL}/guild/storage", headers=headers)
+print("길드 창고 조회 결과 (guild/orders) : ", response.status_code)
+
+# json 데이터 중에 [ ] <- 요게 배열
+# 배열에 있는 데이터에 접근 -> for
+for item in response.json()["items"] : 
+    item_id = item["item_id"]
+    item_name = item["name"]
+    print(f"[{item_id}] {item_name}")
+
+
+print("\n장비 장착")
+response = requests.put(f"{BASE_URL}/guild/heroes/{hero_id}/equipment", headers=headers, json={  "weapon" : 103, "armor" : None  })
+
+total_power = response.json()["total_power"]
+
+print("장착 (heroes/1/equipment) : ", response.status_code)
+print("total_power :", total_power)
+
+
+
+print("\n닉네임 변경")
+response = requests.patch(f"{BASE_URL}/guild/heroes/{hero_id}", headers=headers, json={  "name" : "불꽃 세라" })
+name = response.json()["name"] 
+weapon_id = response.json()["equipment"]["weapon"]["item_id"] 
+weapon_name = response.json()["equipment"]["weapon"]["name"]
+
+print("닉네임 변경 (guild/heroes/1) : ", response.status_code)
+print(f"장착 weapon : [{weapon_id}] {weapon_name}")
+
+
+print("\n영웅 해고")
+
+response = requests.delete(f"{BASE_URL}/guild/heroes/{hero_id}", headers=headers)
+print("영웅 해고 (guild/heroes/1) : ", response.status_code)
+print("text :", response.text)
+
+print("\n해고한 영웅 조회")
+response = requests.get(f"{BASE_URL}/guild/heroes/{hero_id}", headers=headers)
+print("영웅 조회 결과 (guild/heroes/1) : ", response.status_code)
+
+print("\n창고 조회")
+response = requests.get(f"{BASE_URL}/guild/storage", headers=headers)
+print("창고 조회 결과 (guild/storage) : ", response.status_code)
+
+for item in response.json()["items"] : 
+    item_id = item["item_id"]
+    item_name = item["name"]
+    print(f"[{item_id}] {item_name}")
+
+
+
+print("\n상점에서 아이템 반복 구매")
+order_plans = [ (101, 3), (201, 2), (301, 5) ]
+
+# 튜플을 이용하기 번거로울떄
+# item_id         = [ 101 , 21 , 301 ]
+# item_quantity   = [ 3   ,  2 , 5   ]
+
+for order in order_plans:
+    response = requests.post(f"{BASE_URL}/guild/orders", headers=headers, json={ "item_id": order[0], "quantity": order[1] })
+    print(order[0],"구매 결과 (guild/orders) : ", response.status_code)
