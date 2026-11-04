@@ -1,26 +1,20 @@
 import requests
 import time
+import pytest
+
 
 BASE_URL = "https://guild-expedition.fly.dev" 
-USERNAME = "elice_chad"
-PASSWORD = "elice_1234"
+
+def test_guild_info( token ):
+    response = requests.get(f"{BASE_URL}/guild", headers={"Authorization" : "Bearer " + token})
+    assert response.status_code == 200
+
 
 # 테스트 1
 # 용병을 고용 하는 테스트
-def test_hire():
-    # 로그인 - 토큰 획득
-    response = requests.post(f"{BASE_URL}/auth/token", json={ "username":USERNAME , "password":PASSWORD })
-    
-    token = response.json()["access_token"]
-
-    # 토큰 정보를 헤더에 저장
-    h = { "Authorization" : f"Bearer {token}"}
-
-    # 테스트 전에 길드정보 초기화 
-    requests.post(f"{BASE_URL}/guild/reset" , headers=h)
-
+def test_hire( guild_auth ):
     # 고용 - 3번 후보
-    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=h)
+    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=guild_auth)
 
     # 테스트
     # 원하는 동작이 잘 이루어졌는지
@@ -37,23 +31,15 @@ def test_hire():
 # 고용한 용병을 원정을 보내는 요청
 # 용병 전투력 260 / 원정 대상의 전투력 450 
 # 전투력이 부족한 상황에 대해서 검증
-def test_expidetion_to_cave():
-
-    # 테스트 1 번의 내용 - 고용하는 것 까지 확인
-    response = requests.post(f"{BASE_URL}/auth/token", json={ "username":USERNAME , "password":PASSWORD })
-    token = response.json()["access_token"]
-    h = { "Authorization" : f"Bearer {token}"}
-    
-    requests.post(f"{BASE_URL}/guild/reset" , headers=h)
-
-    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=h)
+def test_expidetion_to_cave( guild_auth ):
+    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=guild_auth)
     hero_id = response.json()["hero"]["hero_id"]
 
     # 원정을 요청 -> 실패
     # 전투력이 부족
     # 던전 id 2
     # 영웅 id 1
-    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 2, "hero_ids":[hero_id] } , headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 2, "hero_ids":[hero_id] } , headers=guild_auth)
 
     # 테스트 결과
     # 상태 코드 : 403
@@ -70,21 +56,13 @@ def test_expidetion_to_cave():
 # O 원정을 보내는 것 
 # X 아직 끝나지 않았는데 보상 수령 요청 
 # X 원정 중인 대상을 해고 
-def test_expidetion_to_forest():
-
-    # 테스트 1 번의 내용
-    response = requests.post(f"{BASE_URL}/auth/token", json={ "username":USERNAME , "password":PASSWORD })
-    token = response.json()["access_token"]
-    h = { "Authorization" : f"Bearer {token}"}
-    
-    requests.post(f"{BASE_URL}/guild/reset" , headers=h)
-
-    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=h)
+def test_expidetion_to_forest( guild_auth ):
+    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=guild_auth)
     hero_id = response.json()["hero"]["hero_id"]
 
     # 테스트 2 번의 내용
     # dungeon_id 만 1번으로 요청
-    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 1, "hero_ids":[hero_id] } , headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 1, "hero_ids":[hero_id] } , headers=guild_auth)
 
     # 원정 검증 결과 202 
     assert response.status_code == 202
@@ -98,7 +76,7 @@ def test_expidetion_to_forest():
     expedition_id = expedition_data["expedition_id"]
 
     # 보상을 요청 (IN_PROGRESS 인 상태) <- 테스트
-    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=guild_auth)
 
     # 상태 코드 : 409
     # 에러 코드 : NOT_COMPLETED
@@ -106,26 +84,19 @@ def test_expidetion_to_forest():
     assert response.json()["error_code"] == "NOT_COMPLETED"
 
     # 영웅 해고 <- 원정 중인 대상
-    response = requests.delete(f"{BASE_URL}/guild/heroes/{hero_id}", headers=h)
+    response = requests.delete(f"{BASE_URL}/guild/heroes/{hero_id}", headers=guild_auth)
     # 상태 코드 : 409
     # 에러 코드 : HERO_ON_EXPEDITION
     assert response.status_code == 409
     assert response.json()["error_code"] == "HERO_ON_EXPEDITION"
 
 
-def test_expidetion_to_forest_complete():
-    # 테스트 1 번의 내용
-    response = requests.post(f"{BASE_URL}/auth/token", json={ "username":USERNAME , "password":PASSWORD })
-    token = response.json()["access_token"]
-    h = { "Authorization" : f"Bearer {token}"}
-    
-    requests.post(f"{BASE_URL}/guild/reset" , headers=h)
-
-    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=h)
+def test_expidetion_to_forest_complete( guild_auth ):
+    response = requests.post(f"{BASE_URL}/guild/heroes", json={ "candidate_id" : 3 }, headers=guild_auth)
     hero_id = response.json()["hero"]["hero_id"]
 
     # 테스트 2 번의 내용
-    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 1, "hero_ids":[hero_id] } , headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions", json={ "dungeon_id": 1, "hero_ids":[hero_id] } , headers=guild_auth)
     expedition_data = response.json()
     expedition_id = expedition_data["expedition_id"]
 
@@ -134,7 +105,7 @@ def test_expidetion_to_forest_complete():
 
 
     # 대기를 하고 나서 원정 상황을 체크
-    response = requests.get(f"{BASE_URL}/guild/expeditions/{expedition_id}", headers=h)
+    response = requests.get(f"{BASE_URL}/guild/expeditions/{expedition_id}", headers=guild_auth)
 
     # 상태 코드 : 200
     # status : COMPLETED
@@ -143,7 +114,7 @@ def test_expidetion_to_forest_complete():
 
 
     # 테스트 3 번의 내용 - 보상 요청
-    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=guild_auth)
 
     # 상태 코드 : 200
     # 원정의 보상 골드 : 
@@ -161,7 +132,7 @@ def test_expidetion_to_forest_complete():
 
 
     # 보상이 이미 받아졌는데 -> 또 보상을 요청 : 실채
-    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=h)
+    response = requests.post(f"{BASE_URL}/guild/expeditions/{expedition_id}/reward", headers=guild_auth)
 
     # 상태 코드 : 409
     # 에러 코드 : ALREADY_CLAIMED
@@ -169,7 +140,7 @@ def test_expidetion_to_forest_complete():
     assert response.json()["error_code"] == "ALREADY_CLAIMED"
     
     # 영웅 해고
-    response = requests.delete(f"{BASE_URL}/guild/heroes/{hero_id}", headers=h)
+    response = requests.delete(f"{BASE_URL}/guild/heroes/{hero_id}", headers=guild_auth)
 
     # 상태 코드 : 204
     assert response.status_code == 204

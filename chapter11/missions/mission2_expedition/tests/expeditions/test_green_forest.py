@@ -7,15 +7,31 @@ BASE_URL = "https://guild-expedition.fly.dev"
 
 
 # TODO 1 · party Fixture (scope="class") · 인자 guild
+@pytest.fixture(scope="class")
+def party(guild):
+    response = requests.post(f"{BASE_URL}//guild/heroes", json={  "canditate_id" : 1 },  headers=guild)
+    arin_id = response.json()["hero"]["hero_id"]
+
+    response = requests.post(f"{BASE_URL}//guild/heroes", json={  "canditate_id" : 7 },  headers=guild)
+    doyun_id = response.json()["hero"]["hero_id"]
+
+    return {"arin_id": arin_id, "doyun_id": doyun_id}
 
 
 # TODO 2 · guild Fixture (scope="class") · 인자 token
+@pytest.fixture(scope="class")
+def guild(token):
+    h = {"Authorization" : "Bearer " + token}
+    requests.post(f"{BASE_URL}/guild/reset", headers=h)
+    yield h
+    requests.post(f"{BASE_URL}/guild/reset", headers=h)
 
 
 # TODO 3 · 클래스 전체에 expedition 마커 (pytest.ini 에 이미 등록되어 있습니다)
+@pytest.mark.expedition
 class TestGreenForest:
 
-    def test_order_items(self, guild, party):
+    def test_order_items(self, guild, ):
         response = requests.post(BASE_URL + "/guild/orders", json={"item_id": 102, "quantity": 1}, headers=guild)
         assert response.status_code == 201, f"강철 검 주문: 기대 201, 실제 {response.status_code}"
         assert response.json()["remaining_gold"] == 1500, f"검 주문 뒤 골드: 실제 {response.json()['remaining_gold']}"
@@ -55,7 +71,7 @@ class TestGreenForest:
         assert response.status_code == 202, f"원정 접수: 기대 202, 실제 {response.status_code}"
 
         data = response.json()
-        assert data["party_power"] == 325, f"파티 전투력: 기대 325, 실제 {data['party_power']}"
+        assert data["party_power"] == 325, f"파티 전투력:party 기대 325, 실제 {data['party_power']}"
         assert data["status"] == "IN_PROGRESS"
         assert data["duration_seconds"] == 2
         TestGreenForest.expedition_id = data["expedition_id"]
